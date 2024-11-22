@@ -54,11 +54,12 @@
             android:textSize="@dimen/text_size_16"
             android:gravity="center_vertical" />
 
-        <ImageView
-            android:id="@+id/btn_theme_toggle"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_dark_theme"
             android:layout_width="56dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_theme" />
+            android:thumbTint="@color/switch_thumb_color"
+            android:trackTint="@color/switch_track_color" />
     </LinearLayout>
 
     <!-- Поделиться приложением -->
