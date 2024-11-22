@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_size">16dp</dimen>
+    <dimen name="text_size">22sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="gap_size">8dp</dimen>
+    <dimen name="layout_height_0">0dp</dimen>
+    <dimen name="layout_weight_1">1dp</dimen>
+    <dimen name="layout_width_24">24dp</dimen>
+    <dimen name="layout_height_24">24dp</dimen>
+    <dimen name="padding_vertical_12">12dp</dimen>
+    <dimen name="layout_width_0">0dp</dimen>
+    <dimen name="layout_width_48">48dp</dimen>
+</resources>
