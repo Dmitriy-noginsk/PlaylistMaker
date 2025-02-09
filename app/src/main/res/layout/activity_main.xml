@@ -1,19 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:orientation="vertical"
+    android:background="@color/primary"
+    android:padding="@dimen/padding_size">
 
+    <!-- Заголовок   -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/tv_title"
+        android:fontFamily="@font/medium"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/app_name"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_size"
+        android:paddingBottom="@dimen/padding_size" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Кнопка Поиск -->
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_search"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height_0"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:fontFamily="@font/medium"
+        android:gravity="center"
+        android:letterSpacing="0"
+        android:text="@string/search"
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_size"
+        app:cornerRadius="@dimen/padding_size"
+        app:icon="@drawable/ic_search"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/gap_size"
+        app:iconTint="@android:color/black" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_library"
+        android:fontFamily="@font/medium"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height_0"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
+        android:textAllCaps="false"
+        android:letterSpacing="0"
+        android:text="@string/library"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_size"
+        app:cornerRadius="@dimen/padding_size"
+        app:icon="@drawable/ic_media_library"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/gap_size"
+        app:iconTint="@android:color/black" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_settings"
+        android:fontFamily="@font/medium"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height_0"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
+        android:textAllCaps="false"
+        android:letterSpacing="0"
+        android:text="@string/settings"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_size"
+        app:cornerRadius="@dimen/padding_size"
+        app:icon="@drawable/ic_settings"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/gap_size"
+        app:iconTint="@android:color/black" />
+
+</LinearLayout>
