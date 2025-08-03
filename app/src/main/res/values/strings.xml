@@ -10,4 +10,13 @@
     <string name="terms">Пользовательское соглашение</string>
     <string name="activity_search">Это экран поиска</string>
     <string name="activity_library">Это экран медиатеки</string>
+    <string name="chooser_share">Поделиться приложением через:</string>
+    <string name="chooser_email">Отправить письмо через:</string>
+    <string name="chooser_browser">Открыть через:</string>
+    <string name="share_message">Проходи курс по андроид разработке вместе со мной!
+https://practicum.yandex.ru/android-developer/</string>
+    <string name="support_email">alesyanikul@yandex.by</string>
+    <string name="support_email_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="support_email_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="agreement_url">https://yandex.ru/legal/practicum_offer/</string>
 </resources>

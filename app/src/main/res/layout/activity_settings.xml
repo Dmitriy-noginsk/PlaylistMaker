@@ -51,12 +51,12 @@
             android:id="@+id/switch_dark_theme"
             android:layout_width="56dp"
             android:layout_height="40dp"
-            android:thumbTint="@color/switch_thumb_color"
-            android:trackTint="@color/switch_track_color" />
+            app:theme="@style/Color1SwitchStyle" />
     </LinearLayout>
 
     <!-- Поделиться приложением -->
     <LinearLayout
+        android:id="@+id/btn_share"
         style="@style/SettingsItemContainer">
 
         <TextView
@@ -72,6 +72,7 @@
 
     <!-- Написать в поддержку -->
     <LinearLayout
+        android:id="@+id/btn_support"
         style="@style/SettingsItemContainer">
 
         <TextView
@@ -87,6 +88,7 @@
 
     <!-- Пользовательское соглашение -->
     <LinearLayout
+        android:id="@+id/btn_agreement"
         style="@style/SettingsItemContainer">
 
         <TextView
