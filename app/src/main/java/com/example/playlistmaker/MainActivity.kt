@@ -8,6 +8,10 @@ import android.net.Uri
 import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.Toast
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
@@ -17,6 +21,41 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        // Находим элементы
+        val etSearch = findViewById<EditText>(R.id.et_search)
+        val btnClear = findViewById<ImageView>(R.id.btn_clear)
+
+        // Отслеживаем ввод текста
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Показываем крестик если есть текст
+                btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        // Клик по крестику очищает поле
+        btnClear.setOnClickListener {
+            etSearch.text.clear()
+        }
+
+        // Заглушка TextWatcher
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+        })
     }
 }
 
@@ -98,8 +137,6 @@ class SettingActivity : AppCompatActivity() {
         val chooser = Intent.createChooser(viewIntent, getString(R.string.chooser_browser))
         startActivity(chooser)
     }
-
-
 
 }
 
