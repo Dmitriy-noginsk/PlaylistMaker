@@ -18,46 +18,54 @@ import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.button.MaterialButton
 
 class SearchActivity : AppCompatActivity() {
+
+    private lateinit var etSearch: EditText
+    private lateinit var btnClear: ImageView
+
+    // Переменная для хранения текста
+    private var searchQuery: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
         // Находим элементы
-        val etSearch = findViewById<EditText>(R.id.et_search)
-        val btnClear = findViewById<ImageView>(R.id.btn_clear)
+        etSearch = findViewById(R.id.et_search)
+        btnClear = findViewById(R.id.btn_clear)
 
         // Отслеживаем ввод текста
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Показываем крестик если есть текст
-                btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                // Сохраняем текст в переменную
+                searchQuery = s?.toString() ?: ""
+                btnClear.visibility = if (searchQuery.isEmpty()) View.GONE else View.VISIBLE
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Клик по крестику очищает поле
+        // Кнопка очистки
         btnClear.setOnClickListener {
             etSearch.text.clear()
         }
+    }
 
-        // Заглушка TextWatcher
-        etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    // Сохраняем текст
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("SEARCH_QUERY", searchQuery)
+    }
 
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-        })
+    // Восстанавливаем текст
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchQuery = savedInstanceState.getString("SEARCH_QUERY", "")
+        etSearch.setText(searchQuery)
     }
 }
+
 
 class LibraryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
