@@ -10,6 +10,7 @@ import android.widget.Switch
 import android.widget.Toast
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +30,9 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        findViewById<View>(R.id.btn_back).setOnClickListener {
+            finish()
+        }
         // Находим элементы
         etSearch = findViewById(R.id.et_search)
         btnClear = findViewById(R.id.btn_clear)
@@ -49,7 +53,11 @@ class SearchActivity : AppCompatActivity() {
         // Кнопка очистки
         btnClear.setOnClickListener {
             etSearch.text.clear()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
+            etSearch.clearFocus()
         }
+
     }
 
     // Сохраняем текст
