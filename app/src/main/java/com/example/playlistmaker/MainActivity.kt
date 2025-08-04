@@ -118,7 +118,7 @@ class SettingActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-
+        
         btnShare.setOnClickListener { shareApp() }
         btnSupport.setOnClickListener { writeSupport() }
         btnAgreement.setOnClickListener { openUserAgreement() }
