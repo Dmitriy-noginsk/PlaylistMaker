@@ -20,6 +20,9 @@ import com.google.android.material.button.MaterialButton
 
 class SearchActivity : AppCompatActivity() {
 
+    companion object {
+        private const val KEY_SEARCH_QUERY = "SEARCH_QUERY"
+    }
     private lateinit var etSearch: EditText
     private lateinit var btnClear: ImageView
 
@@ -63,7 +66,7 @@ class SearchActivity : AppCompatActivity() {
     // Сохраняем текст
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("SEARCH_QUERY", searchQuery)
+        outState.putString(KEY_SEARCH_QUERY, searchQuery)
     }
 
     // Восстанавливаем текст
@@ -83,9 +86,19 @@ class LibraryActivity : AppCompatActivity() {
 }
 
 class SettingActivity : AppCompatActivity() {
+    private lateinit var btnShare: LinearLayout
+    private lateinit var btnSupport: LinearLayout
+    private lateinit var btnAgreement: LinearLayout
+    private lateinit var switchTheme: SwitchCompat
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        btnShare = findViewById(R.id.btn_share)
+        btnSupport = findViewById(R.id.btn_support)
+        btnAgreement = findViewById(R.id.btn_agreement)
+        switchTheme = findViewById(R.id.switch_dark_theme)
 
         findViewById<View>(R.id.btn_back).setOnClickListener {
             finish()
@@ -105,18 +118,10 @@ class SettingActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-        //  Вяжем кнопку поделиться
-        findViewById<LinearLayout>(R.id.btn_share).setOnClickListener {
-            shareApp()
-        }
-        //  Вяжем кнопку отправки сообщения
-        findViewById<LinearLayout>(R.id.btn_support).setOnClickListener {
-            writeSupport()
-        }
-        //  Вяжем кнопку пользовательское соглашение
-        findViewById<LinearLayout>(R.id.btn_agreement).setOnClickListener {
-            openUserAgreement()
-        }
+
+        btnShare.setOnClickListener { shareApp() }
+        btnSupport.setOnClickListener { writeSupport() }
+        btnAgreement.setOnClickListener { openUserAgreement() }
 
     }
     private fun shareApp() {
