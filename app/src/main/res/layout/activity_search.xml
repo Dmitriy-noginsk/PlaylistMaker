@@ -47,36 +47,40 @@
         android:paddingVertical="8dp"
         android:gravity="center_vertical">
 
+        <!-- Иконка поиска -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:src="@drawable/ic_search"
             app:tint="@color/icon_search_color" />
 
-        <EditText
-            android:id="@+id/et_search"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:background="@android:color/transparent"
-            android:hint="@string/search_hint"
-            android:textColor="@color/letters"
-            android:textColorHint="@color/icon_search_color"
-            android:inputType="text"
-            android:maxLines="1"
-            android:ellipsize="end"/>
+            android:layout_marginStart="8dp">
 
-        <!-- Кнопка очистки -->
-        <ImageView
-            android:id="@+id/btn_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_clear"
-            app:tint="@color/letters"
-            android:visibility="gone"/>
+            <EditText
+                android:id="@+id/et_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:hint="@string/search_hint"
+                android:textColor="@color/search_text_clear_button"
+                android:textColorHint="@color/icon_search_color"
+                android:inputType="text"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <ImageView
+                android:id="@+id/btn_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_clear"
+                app:tint="@color/search_text_clear_button"
+                android:layout_gravity="end|center_vertical"
+                android:visibility="gone"/>
+        </FrameLayout>
+
     </LinearLayout>
-
-
-
 </LinearLayout>

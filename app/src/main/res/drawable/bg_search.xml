@@ -6,7 +6,7 @@
     <!-- Закругленные углы -->
     <corners android:radius="8dp" />
 
-    <!-- (опционально) Внутренние отступы -->
+    <!-- Внутренние отступы -->
     <padding
         android:left="16dp"
         android:top="4dp"
