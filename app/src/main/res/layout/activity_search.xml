@@ -66,9 +66,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="@string/search_hint"
-
                 android:textColor="@color/search_text"
-
                 android:textColorHint="@color/icon_search_color"
                 android:inputType="text"
                 android:maxLines="1"
@@ -76,12 +74,10 @@
 
             <ImageView
                 android:id="@+id/btn_clear"
-
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@drawable/ic_back_arrow_16"
                 app:tint="@color/clear_button"
-
                 android:layout_gravity="end|center_vertical"
                 android:visibility="gone"/>
         </FrameLayout>
