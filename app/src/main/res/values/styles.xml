@@ -53,7 +53,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingVertical">@dimen/padding_vertical_12</item>
+        <item name="android:paddingVertical">20dp</item>
     </style>
 
     <!-- Стиль для иконок справа -->
