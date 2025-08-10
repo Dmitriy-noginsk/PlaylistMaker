@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_cover"
+        android:layout_width="@dimen/cover_size"
+        android:layout_height="@dimen/cover_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/iv_chevron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_chevron_right_24"
+        app:layout_constraintBottom_toBottomOf="@id/iv_cover"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/iv_cover"
+        app:tint="@color/chevron_right" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="@dimen/layout_weight_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/between_cover_text"
+        android:layout_marginTop="@dimen/search_margin_14"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/letters"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintStart_toEndOf="@id/iv_cover"
+        app:layout_constraintEnd_toStartOf="@id/iv_chevron"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_subtitle"
+        android:layout_width="@dimen/layout_weight_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="@dimen/search_margin_14"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/text_secondary"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintStart_toStartOf="@id/tv_title"
+        app:layout_constraintEnd_toStartOf="@id/iv_chevron"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
