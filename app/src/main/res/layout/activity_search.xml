@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingStart="@dimen/padding_size"
     android:paddingEnd="@dimen/padding_size"
-    android:paddingTop="10dp"
     android:background="@color/settings">
 
     <!-- Назад и Заголовок -->

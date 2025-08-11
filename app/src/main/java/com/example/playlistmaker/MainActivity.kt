@@ -16,9 +16,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.google.android.material.button.MaterialButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -69,8 +73,26 @@ class SearchActivity : AppCompatActivity() {
     private var searchQuery: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        val root = findViewById<View>(R.id.root_search)
+
+        // отступы под системные панели
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val nav    = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // мой зазор по макету 12дп
+            val extraTop = resources.getDimensionPixelSize(R.dimen.content_top_margin)
+
+            v.updatePadding(
+                top = status.top + extraTop,
+                bottom = nav.bottom
+            )
+            insets
+        }
 
         findViewById<View>(R.id.btn_back).setOnClickListener {
             finish()
@@ -171,8 +193,26 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var switchTheme: SwitchCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        val root = findViewById<View>(R.id.root_settings)
+
+        // отступы под системные панели
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val nav    = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // мой зазор по макету 12дп
+            val extraTop = resources.getDimensionPixelSize(R.dimen.content_top_margin)
+
+            v.updatePadding(
+                top = status.top + extraTop,
+                bottom = nav.bottom
+            )
+            insets
+        }
 
         btnShare = findViewById(R.id.btn_share)
         btnSupport = findViewById(R.id.btn_support)
@@ -243,8 +283,26 @@ class SettingActivity : AppCompatActivity() {
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val root = findViewById<View>(R.id.root_main)
+
+        // отступы под системные панели
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val nav    = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // мой зазор по макету 12дп
+            val extraTop = resources.getDimensionPixelSize(R.dimen.content_top_margin)
+
+            v.updatePadding(
+                top = status.top + extraTop,
+                bottom = nav.bottom
+            )
+            insets
+        }
 
         findViewById<MaterialButton>(R.id.btn_search).setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java)

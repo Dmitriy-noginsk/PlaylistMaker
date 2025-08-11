@@ -29,5 +29,6 @@
     <dimen name="rv_bottom_padding">8dp</dimen>
     <dimen name="rv_item_space">4dp</dimen>
     <dimen name="cover_radius">2dp</dimen>
+    <dimen name="content_top_margin">12dp</dimen>
 
 </resources>
