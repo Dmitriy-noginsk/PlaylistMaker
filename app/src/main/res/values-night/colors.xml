@@ -10,5 +10,7 @@
     <color name="icon_arrow_back_color">#FFFFFF</color>
     <color name="icon_support_color">#FFFFFF</color>
     <color name="switch_thumb_active_color">#3772E7</color>
+    <color name="text_secondary">#FFFFFF</color>
+    <color name="chevron_right">#FFFFFF</color>
 
 </resources>
