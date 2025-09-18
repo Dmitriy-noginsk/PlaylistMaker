@@ -62,6 +62,22 @@
         <item name="android:layout_height">@dimen/layout_height_24</item>
     </style>
 
-
+    <style name="ErrorRetryButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/text_retry</item>
+        <item name="backgroundTint">@color/btn_retry_bg</item>
+        <item name="cornerRadius">54dp</item>
+        <item name="android:textSize">@dimen/text_size_14</item>
+        <item name="android:fontFamily">@font/medium</item>
+    </style>
+    <!-- Стиль для текста в кнопках -->
+    <style name="App.ButtonText" parent="@style/TextAppearance.MaterialComponents.Button">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="fontFamily">@font/medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 
 </resources>
