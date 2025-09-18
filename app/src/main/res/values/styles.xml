@@ -72,8 +72,12 @@
         <item name="android:textSize">@dimen/text_size_14</item>
         <item name="android:fontFamily">@font/medium</item>
     </style>
-
-
-
+    <!-- Стиль для текста в кнопках -->
+    <style name="App.ButtonText" parent="@style/TextAppearance.MaterialComponents.Button">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="fontFamily">@font/medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 
 </resources>

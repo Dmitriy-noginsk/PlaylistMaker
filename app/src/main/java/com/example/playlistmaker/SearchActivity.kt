@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,8 +25,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 
 class SearchActivity : AppCompatActivity() {
-
-    companion object { private const val KEY_SEARCH_QUERY = "SEARCH_QUERY" }
 
     private val vm: SearchViewModel by viewModels()
 
@@ -36,6 +35,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderEmpty: View
     private lateinit var placeholderError: View
     private lateinit var btnRetry: View
+
+    private lateinit var historyContainer: View
+    private lateinit var rvHistory: RecyclerView
+    private lateinit var btnClearHistory: View
+    private lateinit var historyAdapter: TracksAdapter
+    private lateinit var searchHistory: SearchHistory
 
     private var searchQuery: String = ""
 
@@ -55,16 +60,33 @@ class SearchActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.btn_back).setOnClickListener { finish() }
 
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        searchHistory = SearchHistory(prefs)
+
+        // --- findViewById
         etSearch = findViewById(R.id.et_search)
         btnClear = findViewById(R.id.btn_clear)
+
         rvTracks = findViewById(R.id.rv_tracks)
         placeholderEmpty = findViewById(R.id.placeholder_empty)
         placeholderError = findViewById(R.id.placeholder_error)
         btnRetry = findViewById(R.id.btn_retry)
 
+        historyContainer = findViewById(R.id.historyContainer)
+        rvHistory = findViewById(R.id.rv_history)
+        btnClearHistory = findViewById(R.id.btn_clear_history)
+
         rvTracks.layoutManager = LinearLayoutManager(this)
-        adapter = TracksAdapter(emptyList())
+        adapter = TracksAdapter(emptyList()) { track ->
+            addToHistory(track)
+        }
         rvTracks.adapter = adapter
+
+        rvHistory.layoutManager = LinearLayoutManager(this)
+        historyAdapter = TracksAdapter(emptyList()) { track ->
+            addToHistory(track)
+        }
+        rvHistory.adapter = historyAdapter
 
         etSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -74,20 +96,28 @@ class SearchActivity : AppCompatActivity() {
             } else false
         }
 
-        etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchQuery = s?.toString() ?: ""
-                btnClear.visibility = if (searchQuery.isEmpty()) View.GONE else View.VISIBLE
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        etSearch.doOnTextChanged { text, _, _, _ ->
+            searchQuery = text?.toString().orEmpty()
+            btnClear.visibility = if (searchQuery.isEmpty()) View.GONE else View.VISIBLE
+            toggleHistory(etSearch.hasFocus(), searchQuery)
+        }
+
+        etSearch.setOnFocusChangeListener { _, hasFocus ->
+            toggleHistory(hasFocus, etSearch.text?.toString().orEmpty())
+        }
 
         btnClear.setOnClickListener {
             etSearch.text.clear()
             hideKeyboard()
             etSearch.clearFocus()
             render(SearchState.Idle)
+            toggleHistory(false, "")
+        }
+
+        btnClearHistory.setOnClickListener {
+            searchHistory.clear()
+            updateHistoryUi()
+            toggleHistory(etSearch.hasFocus(), etSearch.text?.toString().orEmpty())
         }
 
         btnRetry.setOnClickListener {
@@ -100,6 +130,9 @@ class SearchActivity : AppCompatActivity() {
                 vm.state.collect { render(it) }
             }
         }
+
+        updateHistoryUi()
+        toggleHistory(etSearch.hasFocus(), etSearch.text?.toString().orEmpty())
     }
 
     private fun render(state: SearchState) {
@@ -128,10 +161,30 @@ class SearchActivity : AppCompatActivity() {
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
                 rvTracks.isVisible = true
-                rvTracks.adapter = TracksAdapter(state.items)
+
+                adapter.setData(state.items)
+
+                historyContainer.isGone = true
             }
         }
     }
+
+
+    private fun addToHistory(track: Track) {
+        searchHistory.add(track)
+        updateHistoryUi()
+    }
+
+    private fun updateHistoryUi() {
+        historyAdapter.setData(searchHistory.get())
+    }
+
+    private fun toggleHistory(hasFocus: Boolean, text: String) {
+        val shouldShow = hasFocus && text.isEmpty() && searchHistory.isNotEmpty()
+        historyContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
+    }
+
+    // --- сервисные
 
     private fun hideKeyboard() {
         (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
@@ -147,5 +200,10 @@ class SearchActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         searchQuery = savedInstanceState.getString(KEY_SEARCH_QUERY, "")
         etSearch.setText(searchQuery)
+    }
+
+    companion object {
+        private const val PREFS_NAME = "playlist_prefs"
+        private const val KEY_SEARCH_QUERY = "SEARCH_QUERY"
     }
 }
