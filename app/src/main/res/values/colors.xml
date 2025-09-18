@@ -15,6 +15,4 @@
     <color name="search_background">#E6E8EB</color>
     <color name="text_secondary">#AEAFB4</color>
     <color name="chevron_right">#AEAFB4</color>
-    <color name="btn_retry_bg">#1A1B22</color>
-    <color name="text_retry">#FFFFFF</color>
 </resources>

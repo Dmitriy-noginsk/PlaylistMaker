@@ -27,13 +27,14 @@
 
         <TextView
             android:id="@+id/tv_title"
-            android:fontFamily="@font/medium"
+            android:fontFamily="@font/bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/padding_size"
             android:text="@string/search_title"
             android:textColor="@color/letters"
-            android:textSize="@dimen/text_size" />
+            android:textSize="@dimen/text_size"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Поле поиска -->
@@ -61,8 +62,6 @@
 
             <EditText
                 android:id="@+id/et_search"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -94,130 +93,6 @@
         android:paddingTop="16dp"
         android:paddingBottom="0dp"
         android:overScrollMode="ifContentScrolls"/>
-
-    <!-- Плейсхолдер: ничего не найдено -->
-    <LinearLayout
-        android:id="@+id/placeholder_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:paddingTop="102dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/img_placeholder_empty" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/search_empty"
-            android:textColor="@color/letters"
-            android:layout_marginTop="@dimen/text_size_16"
-            android:textSize="19sp"
-            android:fontFamily="@font/medium"/>
-    </LinearLayout>
-
-    <!-- Плейсхолдер: ошибка сервера -->
-    <LinearLayout
-        android:id="@+id/placeholder_error"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:paddingTop="102dp">
-
-        <ImageView
-            android:id="@+id/iv_error"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/img_placeholder_error"/>
-
-        <TextView
-            android:id="@+id/tv_error_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/search_error"
-            android:textColor="@color/letters"
-            android:textSize="19sp"
-            android:fontFamily="@font/medium" />
-
-        <TextView
-            android:id="@+id/tv_error_subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:text="@string/error_subtitle"
-            android:textColor="@color/letters"
-            android:textSize="19sp"
-            android:fontFamily="@font/medium"
-            android:gravity="center"
-            android:lines="3"
-            android:ellipsize="end"
-            />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_retry"
-            style="@style/ErrorRetryButton"
-            android:text="@string/retry"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/historyContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:paddingTop="12dp">
-
-        <TextView
-            android:id="@+id/tv_history_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/history_title"
-            android:gravity="center"
-            android:textSize="19sp"
-            android:fontFamily="@font/medium"
-            android:textColor="@color/letters"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_history"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:overScrollMode="ifContentScrolls"
-            android:clipToPadding="false"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="12dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_clear_history"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:minWidth="0dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:text="@string/clear_history"
-            android:textAppearance="@style/App.ButtonText"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:background="@drawable/button_bg"
-            app:backgroundTint="@null"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"/>
-
-    </LinearLayout>
-
 
 
 
