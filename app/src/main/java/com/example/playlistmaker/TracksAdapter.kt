@@ -11,22 +11,35 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TracksAdapter(private val tracks: List<Track>) :
-    RecyclerView.Adapter<TracksAdapter.TrackViewHolder>() {
+class TracksAdapter(
+    private var tracks: List<Track>,
+    private val onItemClick: ((Track) -> Unit)? = null
+) : RecyclerView.Adapter<TracksAdapter.TrackViewHolder>() {
 
     private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
 
-    class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    inner class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
     ) {
         private val ivCover: ImageView = itemView.findViewById(R.id.iv_cover)
         private val tvTitle: TextView = itemView.findViewById(R.id.tv_title)
-        private val tvSubtitle: TextView = itemView.findViewById(R.id.tv_subtitle)
+        private val tvArtist: TextView = itemView.findViewById(R.id.tv_artist)
+        private val tvDuration: TextView = itemView.findViewById(R.id.tv_duration)
 
-        fun bind(track: Track, timeFormat: SimpleDateFormat) {
+        private var boundTrack: Track? = null
+
+        init {
+            itemView.setOnClickListener {
+                boundTrack?.let { t -> onItemClick?.invoke(t) }
+            }
+        }
+
+        fun bind(track: Track) {
+            boundTrack = track
+
             tvTitle.text = track.trackName
-            val mmss = timeFormat.format(track.trackTimeMillis)
-            tvSubtitle.text = "${track.artistName} • $mmss"
+            tvArtist.text = track.artistName
+            tvDuration.text = timeFormat.format(track.trackTimeMillis)
 
             val radius = itemView.resources.getDimensionPixelSize(R.dimen.cover_radius)
             Glide.with(itemView)
@@ -38,8 +51,17 @@ class TracksAdapter(private val tracks: List<Track>) :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TrackViewHolder(parent)
-    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) =
-        holder.bind(tracks[position], timeFormat)
-    override fun getItemCount() = tracks.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        TrackViewHolder(parent)
+
+    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
+        holder.bind(tracks[position])
+    }
+
+    override fun getItemCount(): Int = tracks.size
+
+    fun setData(newTracks: List<Track>) {
+        tracks = newTracks
+        notifyDataSetChanged()
+    }
 }
