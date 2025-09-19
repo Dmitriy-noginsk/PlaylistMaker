@@ -171,7 +171,7 @@
     <LinearLayout
         android:id="@+id/historyContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
         android:visibility="gone"
@@ -192,7 +192,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_history"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:overScrollMode="ifContentScrolls"
             android:clipToPadding="false"

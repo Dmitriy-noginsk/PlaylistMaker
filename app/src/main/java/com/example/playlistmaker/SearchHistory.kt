@@ -25,8 +25,7 @@ class SearchHistory(
         val current = ArrayList(get())
         current.removeAll { it.trackId == track.trackId }
         current.add(0, track)
-        if (current.size > MAX_SIZE) current.subList(MAX_SIZE, current.size).clear()
-        save(current)
+        save(current.take(MAX_SIZE))
     }
 
     fun clear() = save(emptyList())
