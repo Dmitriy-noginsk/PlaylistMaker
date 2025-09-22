@@ -12,7 +12,11 @@ data class TrackDto(
     @SerializedName("trackName") val trackName: String?,
     @SerializedName("artistName") val artistName: String?,
     @SerializedName("trackTimeMillis") val trackTimeMillis: Long?,
-    @SerializedName("artworkUrl100") val artworkUrl100: String?
+    @SerializedName("artworkUrl100") val artworkUrl100: String?,
+    @SerializedName("collectionName") val collectionName: String?,
+    @SerializedName("releaseDate") val releaseDate: String?,
+    @SerializedName("primaryGenreName") val primaryGenreName: String?,
+    @SerializedName("country") val country: String?
 )
 
 fun TrackDto.toDomain(): Track = Track(
@@ -20,5 +24,10 @@ fun TrackDto.toDomain(): Track = Track(
     trackName = trackName.orEmpty(),
     artistName = artistName.orEmpty(),
     trackTimeMillis = trackTimeMillis ?: 0L,
-    artworkUrl100 = artworkUrl100
+    artworkUrl100 = artworkUrl100.orEmpty(),
+    collectionName = collectionName.orEmpty(),
+    releaseDate = releaseDate.orEmpty(),
+    primaryGenreName = primaryGenreName.orEmpty(),
+    country = country.orEmpty()
 )
+

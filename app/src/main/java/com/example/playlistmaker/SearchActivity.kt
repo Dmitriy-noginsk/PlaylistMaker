@@ -1,8 +1,6 @@
 package com.example.playlistmaker
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -23,6 +21,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
+import android.content.Intent
 
 class SearchActivity : AppCompatActivity() {
 
@@ -78,13 +77,13 @@ class SearchActivity : AppCompatActivity() {
 
         rvTracks.layoutManager = LinearLayoutManager(this)
         adapter = TracksAdapter(emptyList()) { track ->
-            addToHistory(track)
+            onTrackClick(track)
         }
         rvTracks.adapter = adapter
 
         rvHistory.layoutManager = LinearLayoutManager(this)
         historyAdapter = TracksAdapter(emptyList()) { track ->
-            addToHistory(track)
+            onTrackClick(track)
         }
         rvHistory.adapter = historyAdapter
 
@@ -133,6 +132,13 @@ class SearchActivity : AppCompatActivity() {
 
         updateHistoryUi()
         toggleHistory(etSearch.hasFocus(), etSearch.text?.toString().orEmpty())
+    }
+
+    private fun onTrackClick(track: Track) {
+        addToHistory(track)
+        val intent = Intent(this, AudioPlayerActivity::class.java)
+            .putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
+        startActivity(intent)
     }
 
     private fun render(state: SearchState) {
