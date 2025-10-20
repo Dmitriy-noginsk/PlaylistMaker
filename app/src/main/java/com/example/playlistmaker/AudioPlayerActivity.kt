@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -26,8 +27,17 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
             insets
         }
 
-        val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track
-            ?: run { finish(); return }
+        val track: Track? = if (Build.VERSION.SDK_INT >= 33) {
+            intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_TRACK)
+        }
+
+        if (track == null) {
+            finish()
+            return
+        }
 
         val valueDuration: TextView = findViewById(R.id.valueDuration)
         valueDuration.text = formatMillis(track.trackTimeMillis)

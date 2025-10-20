@@ -135,9 +135,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun onTrackClick(track: Track) {
-        addToHistory(track)
-        val intent = Intent(this, AudioPlayerActivity::class.java)
-            .putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
+        val intent = Intent(this, AudioPlayerActivity::class.java).apply {
+            putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
+        }
         startActivity(intent)
     }
 

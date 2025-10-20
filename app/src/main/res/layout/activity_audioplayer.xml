@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:paddingBottom="16dp"
-    android:background="?attr/colorOnPrimary">
+    android:background="@color/text_retry">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -103,7 +103,7 @@
                 android:id="@+id/btnPlay"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:background="?attr/colorOnPrimary"
+                android:background="@color/text_retry"
                 app:srcCompat="@drawable/ic_round_play"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
