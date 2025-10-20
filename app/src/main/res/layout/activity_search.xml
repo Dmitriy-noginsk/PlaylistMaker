@@ -85,6 +85,16 @@
 
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="140dp"
+        android:indeterminateTint="@color/progress_blue"
+        android:visibility="gone"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_tracks"
         android:layout_width="match_parent"

@@ -8,15 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class TracksAdapter(
     private var tracks: List<Track>,
     private val onItemClick: ((Track) -> Unit)? = null
 ) : RecyclerView.Adapter<TracksAdapter.TrackViewHolder>() {
 
-    private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
+    private var lastClickTs = 0L
+    private val clickIntervalMs = 2000L
 
     inner class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
@@ -30,7 +29,11 @@ class TracksAdapter(
 
         init {
             itemView.setOnClickListener {
-                boundTrack?.let { t -> onItemClick?.invoke(t) }
+                val now = System.currentTimeMillis()
+                if (now - lastClickTs >= clickIntervalMs) {
+                    lastClickTs = now
+                    boundTrack?.let { t -> onItemClick?.invoke(t) }
+                }
             }
         }
 
@@ -39,7 +42,6 @@ class TracksAdapter(
 
             tvTitle.text = track.trackName
             tvArtist.text = track.artistName
-            tvDuration.text = timeFormat.format(track.trackTimeMillis)
 
             val radius = itemView.resources.getDimensionPixelSize(R.dimen.cover_radius)
             Glide.with(itemView)

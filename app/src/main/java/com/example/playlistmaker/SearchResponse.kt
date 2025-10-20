@@ -16,7 +16,8 @@ data class TrackDto(
     @SerializedName("collectionName") val collectionName: String?,
     @SerializedName("releaseDate") val releaseDate: String?,
     @SerializedName("primaryGenreName") val primaryGenreName: String?,
-    @SerializedName("country") val country: String?
+    @SerializedName("country") val country: String?,
+    @SerializedName("previewUrl") val previewUrl: String?
 )
 
 fun TrackDto.toDomain(): Track = Track(
@@ -28,6 +29,7 @@ fun TrackDto.toDomain(): Track = Track(
     collectionName = collectionName.orEmpty(),
     releaseDate = releaseDate.orEmpty(),
     primaryGenreName = primaryGenreName.orEmpty(),
-    country = country.orEmpty()
+    country = country.orEmpty(),
+    previewUrl = previewUrl.orEmpty()
 )
 
