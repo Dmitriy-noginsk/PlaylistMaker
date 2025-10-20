@@ -29,6 +29,7 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
     private lateinit var countryTextView: TextView
     private lateinit var trackTimeTextView: TextView
     private lateinit var valueDuration: TextView
+    private val timeFormat = java.text.SimpleDateFormat("mm:ss", java.util.Locale.getDefault())
 
     private var mediaPlayer: MediaPlayer? = null
     private val uiHandler = Handler(Looper.getMainLooper())
@@ -36,7 +37,7 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
         override fun run() {
             if (playerState == PlayerState.PLAYING) {
                 updateProgress()
-                uiHandler.postDelayed(this, 500)
+                uiHandler.postDelayed(this, TICK_DELAY_MS)
             }
         }
     }
@@ -101,8 +102,11 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
         valueDuration = findViewById(R.id.valueDuration)
     }
 
+    private fun setProgress(ms: Long) {
+        trackTimeTextView.text = timeFormat.format(ms)
+    }
     private fun bindTrackInfo(t: Track) {
-        valueDuration.text = formatMillis(t.trackTimeMillis)
+        setProgress(0L)
         trackTitleTextView.text = t.trackName
         artistNameTextView.text = t.artistName
 
@@ -120,7 +124,7 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
         genreTextView.text = t.primaryGenreName.orEmpty()
         countryTextView.text = t.country.orEmpty()
-        trackTimeTextView.text = "00:00"
+        setProgress(0L)
 
         Glide.with(this)
             .load(t.getCoverArtwork())
@@ -149,7 +153,7 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
             setOnErrorListener { _, _, _ ->
                 playerState = PlayerState.PREPARED
                 stopTicker()
-                trackTimeTextView.text = "00:00"
+                setProgress(0L)
                 setPlayIcon()
                 true
             }
@@ -175,7 +179,7 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
         playerState = PlayerState.PREPARED
         setPlayIcon()
         stopTicker()
-        trackTimeTextView.text = "00:00"
+        setProgress(0L)
         mediaPlayer?.seekTo(0)
     }
 
@@ -189,8 +193,7 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
     }
 
     private fun updateProgress() {
-        val pos = mediaPlayer?.currentPosition ?: 0
-        trackTimeTextView.text = formatMillis(pos.toLong())
+        setProgress((mediaPlayer?.currentPosition ?: 0).toLong())
     }
 
     private fun stopAndRelease() {
@@ -209,14 +212,6 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
         btnPlay.setImageResource(R.drawable.ic_round_pause)
     }
 
-    private fun formatMillis(ms: Long?): String {
-        if (ms == null) return "00:00"
-        val totalSec = ms / 1000
-        val min = totalSec / 60
-        val sec = totalSec % 60
-        return String.format("%02d:%02d", min, sec)
-    }
-
     override fun onStop() {
         super.onStop()
         if (playerState == PlayerState.PLAYING) {
@@ -231,5 +226,6 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
     companion object {
         const val EXTRA_TRACK = "extra_track"
+        private const val TICK_DELAY_MS = 500L
     }
 }
