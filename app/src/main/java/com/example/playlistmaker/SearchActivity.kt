@@ -40,6 +40,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var btnClearHistory: View
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var searchHistory: SearchHistory
+    private val progress by lazy { findViewById<View>(R.id.progress) }
+
 
     private var searchQuery: String = ""
 
@@ -99,6 +101,7 @@ class SearchActivity : AppCompatActivity() {
             searchQuery = text?.toString().orEmpty()
             btnClear.visibility = if (searchQuery.isEmpty()) View.GONE else View.VISIBLE
             toggleHistory(etSearch.hasFocus(), searchQuery)
+            vm.onQueryChanged(searchQuery)
         }
 
         etSearch.setOnFocusChangeListener { _, hasFocus ->
@@ -111,6 +114,7 @@ class SearchActivity : AppCompatActivity() {
             etSearch.clearFocus()
             render(SearchState.Idle)
             toggleHistory(false, "")
+            vm.onQueryChanged("")
         }
 
         btnClearHistory.setOnClickListener {
@@ -135,6 +139,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun onTrackClick(track: Track) {
+        addToHistory(track)
         val intent = Intent(this, AudioPlayerActivity::class.java).apply {
             putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
         }
@@ -144,26 +149,31 @@ class SearchActivity : AppCompatActivity() {
     private fun render(state: SearchState) {
         when (state) {
             is SearchState.Idle -> {
+                progress.isGone = true
                 rvTracks.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
             }
             is SearchState.Loading -> {
+                progress.isVisible = true
                 rvTracks.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
             }
             is SearchState.Empty -> {
+                progress.isGone = true
                 rvTracks.isGone = true
                 placeholderError.isGone = true
                 placeholderEmpty.isVisible = true
             }
             is SearchState.Error -> {
+                progress.isGone = true
                 rvTracks.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isVisible = true
             }
             is SearchState.Content -> {
+                progress.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
                 rvTracks.isVisible = true

@@ -17,6 +17,7 @@ class TracksAdapter(
 ) : RecyclerView.Adapter<TracksAdapter.TrackViewHolder>() {
 
     private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
+    private var lastClickTs = 0L
 
     inner class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
@@ -30,7 +31,11 @@ class TracksAdapter(
 
         init {
             itemView.setOnClickListener {
-                boundTrack?.let { t -> onItemClick?.invoke(t) }
+                val now = System.currentTimeMillis()
+                if (now - lastClickTs >= CLICK_INTERVAL_MS) {
+                    lastClickTs = now
+                    boundTrack?.let { t -> onItemClick?.invoke(t) }
+                }
             }
         }
 
@@ -63,5 +68,8 @@ class TracksAdapter(
     fun setData(newTracks: List<Track>) {
         tracks = newTracks
         notifyDataSetChanged()
+    }
+    companion object {
+        private const val CLICK_INTERVAL_MS = 2000L
     }
 }

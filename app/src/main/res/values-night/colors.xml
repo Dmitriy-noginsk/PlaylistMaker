@@ -14,5 +14,6 @@
     <color name="chevron_right">#FFFFFF</color>
     <color name="btn_retry_bg">#FFFFFF</color>
     <color name="text_retry">#1A1B22</color>
+    <color name="round_pause">#FFFFFF</color>
 
 </resources>
