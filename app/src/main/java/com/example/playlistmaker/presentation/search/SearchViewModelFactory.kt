@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.domain.interactor.TracksInteractor
 
-class SearchViewModelFactory(
-    private val creator: Creator
-) : ViewModelProvider.Factory {
+class SearchViewModelFactory : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val interactor: TracksInteractor = creator.provideTracksInteractor()
+        val interactor = Creator.provideTracksInteractor()
         return SearchViewModel(interactor) as T
     }
 }

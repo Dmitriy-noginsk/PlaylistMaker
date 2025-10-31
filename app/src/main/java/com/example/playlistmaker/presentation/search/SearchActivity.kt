@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.presentation.player.AudioPlayerActivity
 import com.example.playlistmaker.R
-import com.example.playlistmaker.Creator
 import com.example.playlistmaker.data.storage.SearchHistory
 import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.launch
@@ -31,7 +30,7 @@ import kotlinx.coroutines.launch
 class SearchActivity : AppCompatActivity() {
 
     private val vm: SearchViewModel by viewModels {
-        SearchViewModelFactory(Creator)
+        SearchViewModelFactory()
     }
 
     private lateinit var etSearch: EditText
