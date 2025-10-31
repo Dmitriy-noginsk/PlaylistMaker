@@ -1,5 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.dto
 
+import com.example.playlistmaker.domain.models.Track
 import com.google.gson.annotations.SerializedName
 
 data class SearchResponse(
@@ -19,17 +20,3 @@ data class TrackDto(
     @SerializedName("country") val country: String?,
     @SerializedName("previewUrl") val previewUrl: String?
 )
-
-fun TrackDto.toDomain(): Track = Track(
-    trackId = trackId ?: 0L,
-    trackName = trackName.orEmpty(),
-    artistName = artistName.orEmpty(),
-    trackTimeMillis = trackTimeMillis ?: 0L,
-    artworkUrl100 = artworkUrl100.orEmpty(),
-    collectionName = collectionName.orEmpty(),
-    releaseDate = releaseDate.orEmpty(),
-    primaryGenreName = primaryGenreName.orEmpty(),
-    country = country.orEmpty(),
-    previewUrl = previewUrl.orEmpty()
-)
-

@@ -1,5 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -20,12 +21,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.presentation.player.AudioPlayerActivity
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data.storage.SearchHistory
+import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.launch
-import android.content.Intent
 
 class SearchActivity : AppCompatActivity() {
 
-    private val vm: SearchViewModel by viewModels()
+    private val vm: SearchViewModel by viewModels {
+        SearchViewModelFactory()
+    }
 
     private lateinit var etSearch: EditText
     private lateinit var btnClear: ImageView
@@ -141,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
     private fun onTrackClick(track: Track) {
         addToHistory(track)
         val intent = Intent(this, AudioPlayerActivity::class.java).apply {
-            putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
+            putExtra(AudioPlayerActivity.Companion.EXTRA_TRACK, track)
         }
         startActivity(intent)
     }
