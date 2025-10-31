@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.player
 
 import android.media.MediaPlayer
 import android.os.Build
@@ -15,6 +15,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
@@ -29,7 +33,7 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
     private lateinit var countryTextView: TextView
     private lateinit var trackTimeTextView: TextView
     private lateinit var valueDuration: TextView
-    private val timeFormat = java.text.SimpleDateFormat("mm:ss", java.util.Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
 
     private var mediaPlayer: MediaPlayer? = null
     private val uiHandler = Handler(Looper.getMainLooper())

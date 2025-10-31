@@ -1,4 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search
+
+import com.example.playlistmaker.domain.models.Track
 
 sealed interface SearchState {
     data object Idle : SearchState

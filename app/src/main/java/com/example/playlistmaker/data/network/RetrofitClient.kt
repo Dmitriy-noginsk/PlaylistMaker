@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

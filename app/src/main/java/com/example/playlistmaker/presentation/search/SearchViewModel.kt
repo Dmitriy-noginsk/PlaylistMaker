@@ -1,17 +1,14 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
+import com.example.playlistmaker.domain.interactor.TracksInteractor
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val tracksInteractor: TracksInteractor
+) : ViewModel() {
 
     private val _state = MutableStateFlow<SearchState>(SearchState.Idle)
     val state: StateFlow<SearchState> = _state
@@ -30,19 +27,12 @@ class SearchViewModel : ViewModel() {
             queryFlow
                 .debounce(2000)
                 .distinctUntilChanged()
-                .collect { q ->
-                    performSearch(q)
-                }
+                .collect { q -> performSearch(q) }
         }
     }
 
-    fun onQueryChanged(newText: String) {
-        queryFlow.value = newText
-    }
-
-    fun search(query: String) {
-        performSearch(query)
-    }
+    fun onQueryChanged(newText: String) { queryFlow.value = newText }
+    fun search(query: String) = performSearch(query)
 
     fun retry() {
         val q = (state.value as? SearchState.Error)?.lastQuery ?: lastFailedQuery
@@ -62,19 +52,14 @@ class SearchViewModel : ViewModel() {
         _state.value = SearchState.Loading
 
         currentJob = viewModelScope.launch(errorHandler) {
-            val resp = RetrofitClient.api.search(trimmed)
-
-            if (resp.isSuccessful) {
-                val list = resp.body()?.results.orEmpty().map { it.toDomain() }
-                _state.value = if (list.isEmpty()) {
-                    SearchState.Empty
-                } else {
-                    SearchState.Content(list)
+            tracksInteractor.search(trimmed)
+                .onSuccess { list ->
+                    _state.value = if (list.isEmpty()) SearchState.Empty
+                    else SearchState.Content(list)
                 }
-            } else {
-                _state.value = SearchState.Error(lastFailedQuery)
-            }
+                .onFailure {
+                    _state.value = SearchState.Error(lastFailedQuery)
+                }
         }
     }
-
 }
