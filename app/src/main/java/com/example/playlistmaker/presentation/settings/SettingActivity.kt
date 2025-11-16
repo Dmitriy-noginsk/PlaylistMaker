@@ -6,12 +6,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 
 class SettingActivity : AppCompatActivity() {
@@ -20,6 +21,10 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var btnSupport: LinearLayout
     private lateinit var btnAgreement: LinearLayout
     private lateinit var switchTheme: SwitchCompat
+
+    private val vm: SettingsViewModel by viewModels {
+        SettingsViewModelFactory(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -42,11 +47,17 @@ class SettingActivity : AppCompatActivity() {
         btnAgreement = findViewById(R.id.btn_agreement)
         switchTheme = findViewById(R.id.switch_dark_theme)
 
-        val app = applicationContext as App
-        switchTheme.isChecked = app.darkTheme
+        vm.isDark.observe(this) { isDark ->
+            switchTheme.isChecked = isDark
+        }
 
-        switchTheme.setOnCheckedChangeListener { _, isChecked ->
-            app.switchTheme(isChecked)
+        switchTheme.setOnCheckedChangeListener { _, enabled ->
+            vm.onThemeSwitched(enabled)
+
+            AppCompatDelegate.setDefaultNightMode(
+                if (enabled) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
         }
 
         btnShare.setOnClickListener { shareApp() }
@@ -55,31 +66,25 @@ class SettingActivity : AppCompatActivity() {
     }
 
     private fun shareApp() {
-        val shareMessage = getString(R.string.share_message)
         val sendIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, shareMessage)
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message))
         }
         startActivity(Intent.createChooser(sendIntent, getString(R.string.chooser_share)))
     }
 
     private fun writeSupport() {
-        val email = getString(R.string.support_email)
-        val subject = getString(R.string.support_email_subject)
-        val body = getString(R.string.support_email_body)
-
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-            putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT, body)
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
+            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_email_subject))
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.support_email_body))
         }
         startActivity(Intent.createChooser(emailIntent, getString(R.string.chooser_email)))
     }
 
     private fun openUserAgreement() {
-        val url = getString(R.string.agreement_url)
-        val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.agreement_url)))
         startActivity(Intent.createChooser(viewIntent, getString(R.string.chooser_browser)))
     }
 }

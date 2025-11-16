@@ -7,8 +7,16 @@ import com.example.playlistmaker.domain.repository.HistoryRepository
 class HistoryRepositoryImpl(
     private val storage: SearchHistory
 ) : HistoryRepository {
+
     override fun getHistory(): List<Track> = storage.get()
-    override fun addToHistory(track: Track) = storage.add(track)
-    override fun clearHistory() = storage.clear()
+
+    override fun addToHistory(track: Track) {
+        storage.add(track)
+    }
+
+    override fun clearHistory() {
+        storage.clear()
+    }
+
     override fun isNotEmpty(): Boolean = storage.isNotEmpty()
 }

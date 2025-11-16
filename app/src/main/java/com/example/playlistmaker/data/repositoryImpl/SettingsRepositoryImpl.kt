@@ -1,11 +1,11 @@
 package com.example.playlistmaker.data.repositoryImpl
 
 import com.example.playlistmaker.domain.repository.SettingsRepository
-import com.example.playlistmaker.data.storage.ThemeRepository
+import com.example.playlistmaker.data.storage.ThemeStorage
 
 class SettingsRepositoryImpl(
-    private val themeRepo: ThemeRepository
+    private val storage: ThemeStorage
 ) : SettingsRepository {
-    override fun isDarkTheme() = themeRepo.isDark()
-    override fun setDarkTheme(enabled: Boolean) = themeRepo.setDark(enabled)
+    override fun isDarkTheme() = storage.isDark()
+    override fun setDarkTheme(enabled: Boolean) = storage.setDark(enabled)
 }
