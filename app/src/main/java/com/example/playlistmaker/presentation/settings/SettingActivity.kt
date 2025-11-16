@@ -23,7 +23,7 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var switchTheme: SwitchCompat
 
     private val vm: SettingsViewModel by viewModels {
-        SettingsViewModelFactory(this)
+        SettingsViewModelFactory(applicationContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,25 +66,31 @@ class SettingActivity : AppCompatActivity() {
     }
 
     private fun shareApp() {
+        val shareMessage = getString(R.string.share_message)
         val sendIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message))
+            putExtra(Intent.EXTRA_TEXT, shareMessage)
         }
         startActivity(Intent.createChooser(sendIntent, getString(R.string.chooser_share)))
     }
 
     private fun writeSupport() {
+        val email = getString(R.string.support_email)
+        val subject = getString(R.string.support_email_subject)
+        val body = getString(R.string.support_email_body)
+
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
-            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_email_subject))
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.support_email_body))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
         }
         startActivity(Intent.createChooser(emailIntent, getString(R.string.chooser_email)))
     }
 
     private fun openUserAgreement() {
-        val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.agreement_url)))
+        val url = getString(R.string.agreement_url)
+        val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(Intent.createChooser(viewIntent, getString(R.string.chooser_browser)))
     }
 }

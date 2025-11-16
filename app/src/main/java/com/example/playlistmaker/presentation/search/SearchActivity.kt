@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 class SearchActivity : AppCompatActivity() {
 
     private val vm: SearchViewModel by viewModels {
-        SearchViewModelFactory(this)
+        SearchViewModelFactory(applicationContext)
     }
 
     private lateinit var etSearch: EditText
@@ -48,6 +48,7 @@ class SearchActivity : AppCompatActivity() {
     private val progress by lazy { findViewById<View>(R.id.progress) }
 
     private var searchQuery: String = ""
+    private var currentState: SearchState = SearchState.Idle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -102,6 +103,7 @@ class SearchActivity : AppCompatActivity() {
             searchQuery = text?.toString().orEmpty()
             btnClear.visibility = if (searchQuery.isEmpty()) View.GONE else View.VISIBLE
             vm.onQueryChanged(searchQuery)
+            updateHistoryVisibility()
         }
 
         etSearch.setOnFocusChangeListener { _, _ ->
@@ -112,8 +114,8 @@ class SearchActivity : AppCompatActivity() {
             etSearch.text.clear()
             hideKeyboard()
             etSearch.clearFocus()
-            render(SearchState.Idle)
             vm.onQueryChanged("")
+            render(SearchState.Idle)
             updateHistoryVisibility()
         }
 
@@ -128,15 +130,10 @@ class SearchActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.state.collect { render(it) }
-            }
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.history.collect { history ->
-                    historyAdapter.setData(history)
-                    updateHistoryVisibility(history)
+                vm.screenState.collect { screen ->
+                    render(screen.searchState)
+                    historyAdapter.setData(screen.history)
+                    updateHistoryVisibility(screen.history.size)
                 }
             }
         }
@@ -152,6 +149,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun render(state: SearchState) {
+        currentState = state
+
         when (state) {
             is SearchState.Idle -> {
                 progress.isGone = true
@@ -159,24 +158,31 @@ class SearchActivity : AppCompatActivity() {
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
             }
+
             is SearchState.Loading -> {
                 progress.isVisible = true
                 rvTracks.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
+                historyContainer.isGone = true
             }
+
             is SearchState.Empty -> {
                 progress.isGone = true
                 rvTracks.isGone = true
                 placeholderError.isGone = true
                 placeholderEmpty.isVisible = true
+                historyContainer.isGone = true
             }
+
             is SearchState.Error -> {
                 progress.isGone = true
                 rvTracks.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isVisible = true
+                historyContainer.isGone = true
             }
+
             is SearchState.Content -> {
                 progress.isGone = true
                 placeholderEmpty.isGone = true
@@ -189,14 +195,18 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateHistoryVisibility(history: List<Track> = vm.history.value) {
+    private fun updateHistoryVisibility(historySize: Int = historyAdapter.itemCount) {
         val hasFocus = etSearch.hasFocus()
         val text = etSearch.text?.toString().orEmpty()
-        val shouldShow = hasFocus && text.isEmpty() && history.isNotEmpty()
+
+        val shouldShow =
+            currentState is SearchState.Idle &&
+                    hasFocus &&
+                    text.isEmpty() &&
+                    historySize > 0
+
         historyContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
     }
-
-    // --- сервисные
 
     private fun hideKeyboard() {
         (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
