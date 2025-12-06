@@ -21,16 +21,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.presentation.player.AudioPlayerActivity
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.storage.SearchHistory
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.player.AudioPlayerActivity
 import kotlinx.coroutines.launch
 
 class SearchActivity : AppCompatActivity() {
 
     private val vm: SearchViewModel by viewModels {
-        SearchViewModelFactory()
+        SearchViewModelFactory(applicationContext)
     }
 
     private lateinit var etSearch: EditText
@@ -45,11 +44,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var rvHistory: RecyclerView
     private lateinit var btnClearHistory: View
     private lateinit var historyAdapter: TracksAdapter
-    private lateinit var searchHistory: SearchHistory
+
     private val progress by lazy { findViewById<View>(R.id.progress) }
 
-
     private var searchQuery: String = ""
+    private var currentState: SearchState = SearchState.Idle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -66,9 +65,6 @@ class SearchActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.btn_back).setOnClickListener { finish() }
-
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        searchHistory = SearchHistory(prefs)
 
         // --- findViewById
         etSearch = findViewById(R.id.et_search)
@@ -106,27 +102,25 @@ class SearchActivity : AppCompatActivity() {
         etSearch.doOnTextChanged { text, _, _, _ ->
             searchQuery = text?.toString().orEmpty()
             btnClear.visibility = if (searchQuery.isEmpty()) View.GONE else View.VISIBLE
-            toggleHistory(etSearch.hasFocus(), searchQuery)
             vm.onQueryChanged(searchQuery)
+            updateHistoryVisibility()
         }
 
-        etSearch.setOnFocusChangeListener { _, hasFocus ->
-            toggleHistory(hasFocus, etSearch.text?.toString().orEmpty())
+        etSearch.setOnFocusChangeListener { _, _ ->
+            updateHistoryVisibility()
         }
 
         btnClear.setOnClickListener {
             etSearch.text.clear()
             hideKeyboard()
             etSearch.clearFocus()
-            render(SearchState.Idle)
-            toggleHistory(false, "")
             vm.onQueryChanged("")
+            render(SearchState.Idle)
+            updateHistoryVisibility()
         }
 
         btnClearHistory.setOnClickListener {
-            searchHistory.clear()
-            updateHistoryUi()
-            toggleHistory(etSearch.hasFocus(), etSearch.text?.toString().orEmpty())
+            vm.onClearHistoryClicked()
         }
 
         btnRetry.setOnClickListener {
@@ -136,23 +130,27 @@ class SearchActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.state.collect { render(it) }
+                vm.screenState.collect { screen ->
+                    render(screen.searchState)
+                    historyAdapter.setData(screen.history)
+                    updateHistoryVisibility(screen.history.size)
+                }
             }
         }
-
-        updateHistoryUi()
-        toggleHistory(etSearch.hasFocus(), etSearch.text?.toString().orEmpty())
     }
 
     private fun onTrackClick(track: Track) {
-        addToHistory(track)
+        vm.onTrackClicked(track)
+
         val intent = Intent(this, AudioPlayerActivity::class.java).apply {
-            putExtra(AudioPlayerActivity.Companion.EXTRA_TRACK, track)
+            putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
         }
         startActivity(intent)
     }
 
     private fun render(state: SearchState) {
+        currentState = state
+
         when (state) {
             is SearchState.Idle -> {
                 progress.isGone = true
@@ -160,24 +158,31 @@ class SearchActivity : AppCompatActivity() {
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
             }
+
             is SearchState.Loading -> {
                 progress.isVisible = true
                 rvTracks.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isGone = true
+                historyContainer.isGone = true
             }
+
             is SearchState.Empty -> {
                 progress.isGone = true
                 rvTracks.isGone = true
                 placeholderError.isGone = true
                 placeholderEmpty.isVisible = true
+                historyContainer.isGone = true
             }
+
             is SearchState.Error -> {
                 progress.isGone = true
                 rvTracks.isGone = true
                 placeholderEmpty.isGone = true
                 placeholderError.isVisible = true
+                historyContainer.isGone = true
             }
+
             is SearchState.Content -> {
                 progress.isGone = true
                 placeholderEmpty.isGone = true
@@ -185,28 +190,23 @@ class SearchActivity : AppCompatActivity() {
                 rvTracks.isVisible = true
 
                 adapter.setData(state.items)
-
                 historyContainer.isGone = true
             }
         }
     }
 
+    private fun updateHistoryVisibility(historySize: Int = historyAdapter.itemCount) {
+        val hasFocus = etSearch.hasFocus()
+        val text = etSearch.text?.toString().orEmpty()
 
-    private fun addToHistory(track: Track) {
-        searchHistory.add(track)
-        updateHistoryUi()
-    }
+        val shouldShow =
+            currentState is SearchState.Idle &&
+                    hasFocus &&
+                    text.isEmpty() &&
+                    historySize > 0
 
-    private fun updateHistoryUi() {
-        historyAdapter.setData(searchHistory.get())
-    }
-
-    private fun toggleHistory(hasFocus: Boolean, text: String) {
-        val shouldShow = hasFocus && text.isEmpty() && searchHistory.isNotEmpty()
         historyContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
     }
-
-    // --- сервисные
 
     private fun hideKeyboard() {
         (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
@@ -225,7 +225,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val PREFS_NAME = "playlist_prefs"
         private const val KEY_SEARCH_QUERY = "SEARCH_QUERY"
     }
 }

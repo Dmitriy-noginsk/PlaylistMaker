@@ -3,7 +3,7 @@ package com.example.playlistmaker
 import android.content.Context
 import com.example.playlistmaker.data.network.RetrofitClient
 import com.example.playlistmaker.data.storage.SearchHistory
-import com.example.playlistmaker.data.storage.ThemeRepository
+import com.example.playlistmaker.data.storage.ThemeStorage
 import com.example.playlistmaker.data.repositoryImpl.TracksRepositoryImpl
 import com.example.playlistmaker.data.repositoryImpl.HistoryRepositoryImpl
 import com.example.playlistmaker.data.repositoryImpl.SettingsRepositoryImpl
@@ -31,7 +31,7 @@ object Creator {
 
     private fun getSettingsRepository(context: Context): SettingsRepository =
         SettingsRepositoryImpl(
-            ThemeRepository(
+            ThemeStorage(
                 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             )
         )

@@ -2,16 +2,31 @@ package com.example.playlistmaker.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.domain.interactor.HistoryInteractor
 import com.example.playlistmaker.domain.interactor.TracksInteractor
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import com.example.playlistmaker.domain.models.Track
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
-    private val tracksInteractor: TracksInteractor
+    private val tracksInteractor: TracksInteractor,
+    private val historyInteractor: HistoryInteractor,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<SearchState>(SearchState.Idle)
-    val state: StateFlow<SearchState> = _state
+    private val _screenState = MutableStateFlow(
+        SearchScreenState(
+            query = "",
+            searchState = SearchState.Idle,
+            history = historyInteractor.getHistory()
+        )
+    )
+    val screenState: StateFlow<SearchScreenState> = _screenState
 
     private var lastFailedQuery: String = ""
     private var currentJob: Job? = null
@@ -19,7 +34,9 @@ class SearchViewModel(
 
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         if (throwable is CancellationException) return@CoroutineExceptionHandler
-        _state.value = SearchState.Error(lastFailedQuery)
+        _screenState.value = _screenState.value.copy(
+            searchState = SearchState.Error(lastFailedQuery)
+        )
     }
 
     init {
@@ -31,34 +48,59 @@ class SearchViewModel(
         }
     }
 
-    fun onQueryChanged(newText: String) { queryFlow.value = newText }
+    fun onQueryChanged(newText: String) {
+        _screenState.value = _screenState.value.copy(query = newText)
+        queryFlow.value = newText
+    }
+
     fun search(query: String) = performSearch(query)
 
     fun retry() {
-        val q = (state.value as? SearchState.Error)?.lastQuery ?: lastFailedQuery
+        val current = _screenState.value.searchState
+        val q = (current as? SearchState.Error)?.lastQuery ?: lastFailedQuery
         if (q.isNotBlank()) performSearch(q)
+    }
+
+    fun onTrackClicked(track: Track) {
+        historyInteractor.addToHistory(track)
+        _screenState.value = _screenState.value.copy(
+            history = historyInteractor.getHistory()
+        )
+    }
+
+    fun onClearHistoryClicked() {
+        historyInteractor.clearHistory()
+        _screenState.value = _screenState.value.copy(history = emptyList())
     }
 
     private fun performSearch(raw: String) {
         val trimmed = raw.trim()
         if (trimmed.isBlank()) {
             currentJob?.cancel()
-            _state.value = SearchState.Idle
+            _screenState.value = _screenState.value.copy(
+                searchState = SearchState.Idle
+            )
             return
         }
 
         lastFailedQuery = trimmed
         currentJob?.cancel()
-        _state.value = SearchState.Loading
+        _screenState.value = _screenState.value.copy(
+            searchState = SearchState.Loading
+        )
 
         currentJob = viewModelScope.launch(errorHandler) {
             tracksInteractor.search(trimmed)
                 .onSuccess { list ->
-                    _state.value = if (list.isEmpty()) SearchState.Empty
-                    else SearchState.Content(list)
+                    _screenState.value = _screenState.value.copy(
+                        searchState = if (list.isEmpty()) SearchState.Empty
+                        else SearchState.Content(list)
+                    )
                 }
                 .onFailure {
-                    _state.value = SearchState.Error(lastFailedQuery)
+                    _screenState.value = _screenState.value.copy(
+                        searchState = SearchState.Error(lastFailedQuery)
+                    )
                 }
         }
     }

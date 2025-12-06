@@ -6,12 +6,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 
 class SettingActivity : AppCompatActivity() {
@@ -20,6 +21,10 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var btnSupport: LinearLayout
     private lateinit var btnAgreement: LinearLayout
     private lateinit var switchTheme: SwitchCompat
+
+    private val vm: SettingsViewModel by viewModels {
+        SettingsViewModelFactory(applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -42,11 +47,17 @@ class SettingActivity : AppCompatActivity() {
         btnAgreement = findViewById(R.id.btn_agreement)
         switchTheme = findViewById(R.id.switch_dark_theme)
 
-        val app = applicationContext as App
-        switchTheme.isChecked = app.darkTheme
+        vm.isDark.observe(this) { isDark ->
+            switchTheme.isChecked = isDark
+        }
 
-        switchTheme.setOnCheckedChangeListener { _, isChecked ->
-            app.switchTheme(isChecked)
+        switchTheme.setOnCheckedChangeListener { _, enabled ->
+            vm.onThemeSwitched(enabled)
+
+            AppCompatDelegate.setDefaultNightMode(
+                if (enabled) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
         }
 
         btnShare.setOnClickListener { shareApp() }

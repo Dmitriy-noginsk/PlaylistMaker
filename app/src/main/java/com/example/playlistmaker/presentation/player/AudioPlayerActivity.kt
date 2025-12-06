@@ -1,15 +1,13 @@
 package com.example.playlistmaker.presentation.player
 
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -17,11 +15,12 @@ import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
+    private val viewModel: PlayerViewModel by viewModels {
+        PlayerViewModelFactory()
+    }
     private lateinit var btnPlay: ImageButton
     private lateinit var backButton: ImageButton
     private lateinit var coverImageView: ImageView
@@ -33,21 +32,6 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
     private lateinit var countryTextView: TextView
     private lateinit var trackTimeTextView: TextView
     private lateinit var valueDuration: TextView
-    private val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
-
-    private var mediaPlayer: MediaPlayer? = null
-    private val uiHandler = Handler(Looper.getMainLooper())
-    private val tickRunnable = object : Runnable {
-        override fun run() {
-            if (playerState == PlayerState.PLAYING) {
-                updateProgress()
-                uiHandler.postDelayed(this, TICK_DELAY_MS)
-            }
-        }
-    }
-
-    private enum class PlayerState { DEFAULT, PREPARED, PLAYING, PAUSED }
-    private var playerState: PlayerState = PlayerState.DEFAULT
 
     private var track: Track? = null
 
@@ -76,19 +60,21 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
         bindViews()
         bindTrackInfo(track!!)
-        initPlayer(track!!.previewUrl)
+
+        viewModel.prepare(track!!.previewUrl)
+
+        viewModel.uiState.observe(this) { state ->
+            trackTimeTextView.text = state.progress
+            btnPlay.isEnabled = state.isPlayButtonEnabled
+            if (state.isPlaying) setPauseIcon() else setPlayIcon()
+        }
 
         backButton.setOnClickListener {
-            stopAndRelease()
             onBackPressedDispatcher.onBackPressed()
         }
 
         btnPlay.setOnClickListener {
-            when (playerState) {
-                PlayerState.PREPARED, PlayerState.PAUSED -> startPlayback()
-                PlayerState.PLAYING -> pausePlayback()
-                else -> Unit
-            }
+            viewModel.onPlayClicked()
         }
     }
 
@@ -106,11 +92,8 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
         valueDuration = findViewById(R.id.valueDuration)
     }
 
-    private fun setProgress(ms: Long) {
-        trackTimeTextView.text = timeFormat.format(ms)
-    }
     private fun bindTrackInfo(t: Track) {
-        setProgress(0L)
+        trackTimeTextView.text = "00:00"
         trackTitleTextView.text = t.trackName
         artistNameTextView.text = t.artistName
 
@@ -128,7 +111,6 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
         genreTextView.text = t.primaryGenreName.orEmpty()
         countryTextView.text = t.country.orEmpty()
-        setProgress(0L)
 
         Glide.with(this)
             .load(t.getCoverArtwork())
@@ -138,74 +120,6 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
             .into(coverImageView)
 
         setPlayIcon()
-    }
-
-    private fun initPlayer(previewUrl: String?) {
-        if (previewUrl.isNullOrBlank()) {
-            btnPlay.isEnabled = false
-            return
-        }
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(previewUrl)
-            setOnPreparedListener {
-                playerState = PlayerState.PREPARED
-                setPlayIcon()
-            }
-            setOnCompletionListener {
-                onCompleted()
-            }
-            setOnErrorListener { _, _, _ ->
-                playerState = PlayerState.PREPARED
-                stopTicker()
-                setProgress(0L)
-                setPlayIcon()
-                true
-            }
-            prepareAsync()
-        }
-    }
-
-    private fun startPlayback() {
-        mediaPlayer?.start()
-        playerState = PlayerState.PLAYING
-        setPauseIcon()
-        startTicker()
-    }
-
-    private fun pausePlayback() {
-        mediaPlayer?.pause()
-        playerState = PlayerState.PAUSED
-        setPlayIcon()
-        stopTicker()
-    }
-
-    private fun onCompleted() {
-        playerState = PlayerState.PREPARED
-        setPlayIcon()
-        stopTicker()
-        setProgress(0L)
-        mediaPlayer?.seekTo(0)
-    }
-
-    private fun startTicker() {
-        uiHandler.removeCallbacks(tickRunnable)
-        uiHandler.post(tickRunnable)
-    }
-
-    private fun stopTicker() {
-        uiHandler.removeCallbacks(tickRunnable)
-    }
-
-    private fun updateProgress() {
-        setProgress((mediaPlayer?.currentPosition ?: 0).toLong())
-    }
-
-    private fun stopAndRelease() {
-        stopTicker()
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-        playerState = PlayerState.DEFAULT
     }
 
     private fun setPlayIcon() {
@@ -218,18 +132,10 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
     override fun onStop() {
         super.onStop()
-        if (playerState == PlayerState.PLAYING) {
-            pausePlayback()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopAndRelease()
+        viewModel.onStopView()
     }
 
     companion object {
         const val EXTRA_TRACK = "extra_track"
-        private const val TICK_DELAY_MS = 500L
     }
 }
