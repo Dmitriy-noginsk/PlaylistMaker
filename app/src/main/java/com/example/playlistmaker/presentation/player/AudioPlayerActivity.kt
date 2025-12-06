@@ -7,7 +7,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -18,9 +18,7 @@ import com.example.playlistmaker.domain.models.Track
 
 class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
 
-    private val viewModel: PlayerViewModel by viewModels {
-        PlayerViewModelFactory()
-    }
+    private val viewModel: PlayerViewModel by viewModel()
     private lateinit var btnPlay: ImageButton
     private lateinit var backButton: ImageButton
     private lateinit var coverImageView: ImageView

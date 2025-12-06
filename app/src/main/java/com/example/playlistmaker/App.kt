@@ -2,15 +2,33 @@ package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.di.dataModule
+import com.example.playlistmaker.di.interactorModule
+import com.example.playlistmaker.di.repositoryModule
+import com.example.playlistmaker.di.viewModelModule
 import com.example.playlistmaker.domain.interactor.SettingsInteractor
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
 
 class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
-        val settingsInteractor: SettingsInteractor =
-            Creator.provideSettingsInteractor(applicationContext)
+        startKoin {
+            androidContext(this@App)
+            modules(
+                dataModule,
+                repositoryModule,
+                interactorModule,
+                viewModelModule
+            )
+        }
+
+        val koin = GlobalContext.get()
+
+        val settingsInteractor: SettingsInteractor = koin.get()
 
         val isDark = settingsInteractor.isDark()
 
