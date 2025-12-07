@@ -8,6 +8,7 @@ import com.example.playlistmaker.data.storage.ThemeStorage
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import android.media.MediaPlayer
 
 private const val PREFS_NAME = "playlist_prefs"
 
@@ -26,6 +27,10 @@ val dataModule = module {
 
     single {
         Gson()
+    }
+
+    single {
+        MediaPlayer()
     }
 
     single {

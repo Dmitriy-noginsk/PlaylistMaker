@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(
+    private val mediaPlayer: MediaPlayer
+) : ViewModel() {
 
     private enum class PlayerState { DEFAULT, PREPARED, PLAYING, PAUSED }
 
@@ -24,7 +26,6 @@ class PlayerViewModel : ViewModel() {
     private val _uiState = MutableLiveData(UiState())
     val uiState: LiveData<UiState> = _uiState
 
-    private var mediaPlayer: MediaPlayer? = null
     private var playerState: PlayerState = PlayerState.DEFAULT
 
     private val uiHandler = Handler(Looper.getMainLooper())
@@ -47,27 +48,26 @@ class PlayerViewModel : ViewModel() {
             return
         }
 
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(previewUrl)
-            setOnPreparedListener {
-                playerState = PlayerState.PREPARED
-                _uiState.value = _uiState.value?.copy(
-                    isPlayButtonEnabled = true,
-                    isPlaying = false,
-                    progress = "00:00"
-                )
-            }
-            setOnCompletionListener {
-                onCompleted()
-            }
-            setOnErrorListener { _, _, _ ->
-                playerState = PlayerState.PREPARED
-                stopTicker()
-                resetProgress()
-                true
-            }
-            prepareAsync()
+        mediaPlayer.reset()
+        mediaPlayer.setDataSource(previewUrl)
+        mediaPlayer.setOnPreparedListener {
+            playerState = PlayerState.PREPARED
+            _uiState.value = _uiState.value?.copy(
+                isPlayButtonEnabled = true,
+                isPlaying = false,
+                progress = "00:00"
+            )
         }
+        mediaPlayer.setOnCompletionListener {
+            onCompleted()
+        }
+        mediaPlayer.setOnErrorListener { _, _, _ ->
+            playerState = PlayerState.PREPARED
+            stopTicker()
+            resetProgress()
+            true
+        }
+        mediaPlayer.prepareAsync()
     }
 
     fun onPlayClicked() {
@@ -136,9 +136,13 @@ class PlayerViewModel : ViewModel() {
 
     private fun stopAndRelease() {
         stopTicker()
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+
+        try {
+            mediaPlayer.stop()
+        } catch (_: IllegalStateException) {
+        }
+
+        mediaPlayer.reset()
         playerState = PlayerState.DEFAULT
     }
 
