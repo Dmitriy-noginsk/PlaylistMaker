@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
@@ -22,9 +22,7 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var btnAgreement: LinearLayout
     private lateinit var switchTheme: SwitchCompat
 
-    private val vm: SettingsViewModel by viewModels {
-        SettingsViewModelFactory(applicationContext)
-    }
+    private val vm: SettingsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()

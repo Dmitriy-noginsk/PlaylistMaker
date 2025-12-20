@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 
 class SearchHistory(
     private val prefs: SharedPreferences,
-    private val gson: Gson = Gson()
+    private val gson: Gson
 ) {
     companion object {
         private const val KEY_HISTORY_JSON = "KEY_HISTORY_JSON"
