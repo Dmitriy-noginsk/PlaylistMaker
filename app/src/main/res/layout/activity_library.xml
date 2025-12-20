@@ -1,15 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_library"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="@dimen/padding_size">
+    android:paddingStart="@dimen/padding_size"
+    android:paddingEnd="@dimen/padding_size"
+    android:background="@color/settings">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/activity_library"
-        android:textSize="@dimen/text_size" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/padding_size">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="@dimen/layout_width_48"
+            android:layout_height="@dimen/layout_width_48"
+            android:src="@drawable/ic_back"
+            app:tint="@color/icon_arrow_back_color"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/padding_size"
+            android:text="@string/media_title"
+            android:textColor="@color/letters"
+            android:textSize="@dimen/text_size"
+            android:fontFamily="@font/medium"/>
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabIndicatorHeight="2dp"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorColor="@color/letters"
+        app:tabSelectedTextColor="@color/letters"
+        app:tabTextColor="@color/icon_arrow_back_color"
+        app:tabTextAppearance="@style/LibraryTabText"
+        app:tabRippleColor="@android:color/transparent"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
 </LinearLayout>
