@@ -1,24 +1,26 @@
 package com.example.playlistmaker.presentation.player
 
-import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AudioPlayerActivity : AppCompatActivity(R.layout.fragment_audio_player) {
+class AudioPlayerFragment : Fragment() {
 
     private val viewModel: PlayerViewModel by viewModel()
+
     private lateinit var btnPlay: ImageButton
     private lateinit var backButton: ImageButton
     private lateinit var coverImageView: ImageView
@@ -33,11 +35,18 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.fragment_audio_player) {
 
     private var track: Track? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.fragment_audio_player, container, false)
+    }
 
-        val root = findViewById<View>(R.id.root_player)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val root = view.findViewById<View>(R.id.root_player)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
@@ -46,29 +55,24 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.fragment_audio_player) {
             insets
         }
 
-        track = if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(EXTRA_TRACK)
-        }
+        track = requireArguments().getParcelable(ARG_TRACK)
         if (track == null) {
-            finish(); return
+            findNavController().navigateUp()
+            return
         }
 
-        bindViews()
+        bindViews(view)
         bindTrackInfo(track!!)
 
         viewModel.prepare(track!!.previewUrl)
-
-        viewModel.uiState.observe(this) { state ->
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
             trackTimeTextView.text = state.progress
             btnPlay.isEnabled = state.isPlayButtonEnabled
             if (state.isPlaying) setPauseIcon() else setPlayIcon()
         }
 
         backButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            findNavController().navigateUp()
         }
 
         btnPlay.setOnClickListener {
@@ -76,18 +80,18 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.fragment_audio_player) {
         }
     }
 
-    private fun bindViews() {
-        btnPlay = findViewById(R.id.btnPlay)
-        backButton = findViewById(R.id.backButton)
-        coverImageView = findViewById(R.id.coverImageView)
-        trackTitleTextView = findViewById(R.id.trackTitleTextView)
-        artistNameTextView = findViewById(R.id.artistNameTextView)
-        albumTextView = findViewById(R.id.albumTextView)
-        releaseDateTextView = findViewById(R.id.releaseDateTextView)
-        genreTextView = findViewById(R.id.genreTextView)
-        countryTextView = findViewById(R.id.countryTextView)
-        trackTimeTextView = findViewById(R.id.trackTimeTextView)
-        valueDuration = findViewById(R.id.valueDuration)
+    private fun bindViews(view: View) {
+        btnPlay = view.findViewById(R.id.btnPlay)
+        backButton = view.findViewById(R.id.backButton)
+        coverImageView = view.findViewById(R.id.coverImageView)
+        trackTitleTextView = view.findViewById(R.id.trackTitleTextView)
+        artistNameTextView = view.findViewById(R.id.artistNameTextView)
+        albumTextView = view.findViewById(R.id.albumTextView)
+        releaseDateTextView = view.findViewById(R.id.releaseDateTextView)
+        genreTextView = view.findViewById(R.id.genreTextView)
+        countryTextView = view.findViewById(R.id.countryTextView)
+        trackTimeTextView = view.findViewById(R.id.trackTimeTextView)
+        valueDuration = view.findViewById(R.id.valueDuration)
     }
 
     private fun bindTrackInfo(t: Track) {
@@ -98,12 +102,14 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.fragment_audio_player) {
         if (t.collectionName.isNullOrBlank()) {
             albumTextView.visibility = View.GONE
         } else {
+            albumTextView.visibility = View.VISIBLE
             albumTextView.text = t.collectionName
         }
 
         if (t.releaseDate.isNullOrBlank()) {
             releaseDateTextView.visibility = View.GONE
         } else {
+            releaseDateTextView.visibility = View.VISIBLE
             releaseDateTextView.text = t.releaseDate.take(4)
         }
 
@@ -134,6 +140,9 @@ class AudioPlayerActivity : AppCompatActivity(R.layout.fragment_audio_player) {
     }
 
     companion object {
-        const val EXTRA_TRACK = "extra_track"
+        const val ARG_TRACK = "ARG_TRACK"
+
+        fun createArgs(track: Track): Bundle =
+            Bundle().apply { putParcelable(ARG_TRACK, track) }
     }
 }

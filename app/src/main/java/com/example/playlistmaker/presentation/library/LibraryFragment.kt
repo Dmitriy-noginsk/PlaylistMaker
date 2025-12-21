@@ -1,26 +1,42 @@
 package com.example.playlistmaker.presentation.library
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityLibraryBinding
+import com.example.playlistmaker.databinding.FragmentLibraryBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
-class LibraryActivity : AppCompatActivity() {
+class LibraryFragment : Fragment() {
 
-    private lateinit var binding: ActivityLibraryBinding
+    private var _binding: FragmentLibraryBinding? = null
+    private val binding get() = _binding!!
     private var tabMediator: TabLayoutMediator? = null
+    private var selectedTab: Int = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
+    private val pageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            selectedTab = position
+        }
+    }
 
-        binding = ActivityLibraryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentLibraryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.rootLibrary) { v, insets ->
             val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -30,9 +46,7 @@ class LibraryActivity : AppCompatActivity() {
             insets
         }
 
-        binding.btnBack.setOnClickListener { finish() }
-
-        //binding.viewPager.adapter = LibraryViewPagerAdapter(this)
+        binding.viewPager.adapter = LibraryViewPagerAdapter(this)
 
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
@@ -41,19 +55,24 @@ class LibraryActivity : AppCompatActivity() {
             }
         }.also { it.attach() }
 
-        val selectedTab = savedInstanceState?.getInt(KEY_SELECTED_TAB) ?: 0
+        selectedTab = savedInstanceState?.getInt(KEY_SELECTED_TAB) ?: 0
         binding.viewPager.setCurrentItem(selectedTab, false)
+
+        binding.viewPager.registerOnPageChangeCallback(pageChangeCallback)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(KEY_SELECTED_TAB, binding.viewPager.currentItem)
+        outState.putInt(KEY_SELECTED_TAB, selectedTab)
         super.onSaveInstanceState(outState)
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        binding.viewPager.unregisterOnPageChangeCallback(pageChangeCallback)
+
         tabMediator?.detach()
         tabMediator = null
-        super.onDestroy()
+        _binding = null
+        super.onDestroyView()
     }
 
     private companion object {

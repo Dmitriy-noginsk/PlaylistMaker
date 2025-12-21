@@ -3,19 +3,21 @@ package com.example.playlistmaker.presentation.settings
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
 import com.example.playlistmaker.R
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingActivity : AppCompatActivity() {
+class SettingsFragment : Fragment() {
 
     private lateinit var btnShare: LinearLayout
     private lateinit var btnSupport: LinearLayout
@@ -24,12 +26,16 @@ class SettingActivity : AppCompatActivity() {
 
     private val vm: SettingsViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_settings)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = inflater.inflate(R.layout.fragment_settings, container, false)
 
-        val root = findViewById<View>(R.id.root_settings)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val root = view.findViewById<View>(R.id.root_settings)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
@@ -38,14 +44,12 @@ class SettingActivity : AppCompatActivity() {
             insets
         }
 
-        findViewById<View>(R.id.btn_back).setOnClickListener { finish() }
+        btnShare = view.findViewById(R.id.btn_share)
+        btnSupport = view.findViewById(R.id.btn_support)
+        btnAgreement = view.findViewById(R.id.btn_agreement)
+        switchTheme = view.findViewById(R.id.switch_dark_theme)
 
-        btnShare = findViewById(R.id.btn_share)
-        btnSupport = findViewById(R.id.btn_support)
-        btnAgreement = findViewById(R.id.btn_agreement)
-        switchTheme = findViewById(R.id.switch_dark_theme)
-
-        vm.isDark.observe(this) { isDark ->
+        vm.isDark.observe(viewLifecycleOwner) { isDark ->
             switchTheme.isChecked = isDark
         }
 

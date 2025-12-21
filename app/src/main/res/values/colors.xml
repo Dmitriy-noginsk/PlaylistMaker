@@ -19,4 +19,6 @@
     <color name="text_retry">#FFFFFF</color>
     <color name="progress_blue">#3772E7</color>
     <color name="round_pause">#1A1B22</color>
+    <color name="bottom_nav_blue">#3772E7</color>
+    <color name="bottom_nav_gray">#1A1B22</color>
 </resources>
