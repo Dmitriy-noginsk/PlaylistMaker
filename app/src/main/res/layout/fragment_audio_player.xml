@@ -28,9 +28,7 @@
                 android:layout_height="@dimen/layout_width_48"
                 android:background="@android:color/transparent"
                 app:srcCompat="@drawable/ic_back"
-                app:tint="@color/icon_arrow_back_color"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:tint="@color/icon_arrow_back_color" />
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

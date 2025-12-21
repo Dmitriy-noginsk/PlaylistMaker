@@ -10,32 +10,16 @@
     android:background="@color/settings">
 
     <!-- Назад и Заголовок -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingBottom="@dimen/padding_size">
-
-        <ImageView
-            android:id="@+id/btn_back"
-            android:layout_width="@dimen/layout_width_48"
-            android:layout_height="@dimen/layout_width_48"
-            android:src="@drawable/ic_back"
-            app:tint="@color/icon_arrow_back_color"
-            android:layout_marginEnd="@dimen/layout_width_0"/>
-
-        <TextView
-            android:id="@+id/tv_title"
-            android:fontFamily="@font/bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding_size"
-            android:text="@string/settings_title"
-            android:textColor="@color/letters"
-            android:textSize="@dimen/text_size"
-            android:textStyle="bold" />
-    </LinearLayout>
+        android:paddingBottom="@dimen/padding_size"
+        android:text="@string/settings_title"
+        android:textColor="@color/letters"
+        android:textSize="@dimen/text_size"
+        android:fontFamily="@font/bold"
+        android:textStyle="bold" />
 
     <!-- Темная тема -->
     <LinearLayout

@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 
-class AudioPlayerActivity : AppCompatActivity(R.layout.activity_audioplayer) {
+class AudioPlayerActivity : AppCompatActivity(R.layout.fragment_audio_player) {
 
     private val viewModel: PlayerViewModel by viewModel()
     private lateinit var btnPlay: ImageButton
