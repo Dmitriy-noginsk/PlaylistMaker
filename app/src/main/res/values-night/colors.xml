@@ -15,5 +15,8 @@
     <color name="btn_retry_bg">#FFFFFF</color>
     <color name="text_retry">#1A1B22</color>
     <color name="round_pause">#FFFFFF</color>
+    <color name="bottom_nav_blue">#3772E7</color>
+    <color name="bottom_nav_gray">#FFFFFF</color>
+    <color name="bottom_nav_bg">#1A1B22</color>
 
 </resources>

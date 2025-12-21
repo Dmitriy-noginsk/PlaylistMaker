@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.playlistmaker.R
@@ -38,14 +35,6 @@ class LibraryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.rootLibrary) { v, insets ->
-            val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            val extraTop = resources.getDimensionPixelSize(R.dimen.content_top_margin)
-            v.updatePadding(top = status.top + extraTop, bottom = nav.bottom)
-            insets
-        }
-
         binding.viewPager.adapter = LibraryViewPagerAdapter(this)
 
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -67,8 +56,9 @@ class LibraryFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        binding.viewPager.unregisterOnPageChangeCallback(pageChangeCallback)
-
+        if (_binding != null) {
+            binding.viewPager.unregisterOnPageChangeCallback(pageChangeCallback)
+        }
         tabMediator?.detach()
         tabMediator = null
         _binding = null

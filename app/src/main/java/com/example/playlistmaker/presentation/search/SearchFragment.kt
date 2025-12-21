@@ -9,11 +9,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -39,6 +36,7 @@ class SearchFragment : Fragment() {
     private lateinit var placeholderEmpty: View
     private lateinit var placeholderError: View
     private lateinit var btnRetry: View
+    private lateinit var progress: View
 
     private lateinit var historyContainer: View
     private lateinit var rvHistory: RecyclerView
@@ -47,8 +45,6 @@ class SearchFragment : Fragment() {
 
     private var searchQuery: String = ""
     private var currentState: SearchState = SearchState.Idle
-
-    private val progress by lazy { requireView().findViewById<View>(R.id.progress) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,15 +55,6 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val root = view.findViewById<View>(R.id.root_search)
-        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val extraTop = resources.getDimensionPixelSize(R.dimen.content_top_margin)
-            v.updatePadding(top = status.top + extraTop)
-            insets
-        }
-
-        // findViewById
         etSearch = view.findViewById(R.id.et_search)
         btnClear = view.findViewById(R.id.btn_clear)
 
@@ -75,6 +62,7 @@ class SearchFragment : Fragment() {
         placeholderEmpty = view.findViewById(R.id.placeholder_empty)
         placeholderError = view.findViewById(R.id.placeholder_error)
         btnRetry = view.findViewById(R.id.btn_retry)
+        progress = view.findViewById(R.id.progress)
 
         historyContainer = view.findViewById(R.id.historyContainer)
         rvHistory = view.findViewById(R.id.rv_history)
@@ -221,6 +209,5 @@ class SearchFragment : Fragment() {
 
     companion object {
         private const val KEY_SEARCH_QUERY = "SEARCH_QUERY"
-        const val ARG_TRACK = "ARG_TRACK"
     }
 }

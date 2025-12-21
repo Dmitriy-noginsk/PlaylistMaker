@@ -32,8 +32,6 @@ class LibraryActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener { finish() }
 
-        //binding.viewPager.adapter = LibraryViewPagerAdapter(this)
-
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.media_tab_favorites)
